@@ -12,15 +12,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Formulario</title>
 </head>
-
+  
 <body>
-  <video src="img/video.mp4" id="vidFondo"></video>
 
   <div class="contenedor">
     <div class="card rowTitulo">
       <h1>Bienes Intelcost</h1>
     </div>
     <div class="colFiltros">
+	<p id="demo"></p>
+	
       <form action="#" method="post" id="formulario">
         <div class="filtrosContenido">
           <div class="tituloFiltros">
@@ -29,14 +30,14 @@
           <div class="filtroCiudad input-field">
             <p><label for="selectCiudad">Ciudad:</label><br></p>
             <select name="ciudad" id="selectCiudad">
-              <option value="" selected>Elige una ciudad</option>
+               
             </select>
           </div>
           <div class="filtroTipo input-field">
             <p><label for="selecTipo">Tipo:</label></p>
             <br>
             <select name="tipo" id="selectTipo">
-              <option value="">Elige un tipo</option>
+               
             </select>
           </div>
           <div class="filtroPrecio">
@@ -59,6 +60,7 @@
           <div class="tituloContenido card" style="justify-content: center;">
             <h5>Resultados de la búsqueda:</h5>
             <div class="divider"></div>
+			<div id="contenido"></div>
           </div>
         </div>
       </div>
@@ -68,7 +70,8 @@
           <div class="tituloContenido card" style="justify-content: center;">
             <h5>Bienes guardados:</h5>
             <div class="divider"></div>
-          </div>
+            <div id="consulta"></div>
+		  </div>
         </div>
       </div>
     </div>
@@ -83,8 +86,146 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript">
       $( document ).ready(function() {
-          $( "#tabs" ).tabs();
-      });
-    </script>
-  </body>
-  </html>
+
+
+
+		 var options,options2,options3,options4,elemento;
+          $( "#tabs" ).tabs(); 
+          fetch('data-1.json')
+                .then(res => res.json())
+                .then(datos => {
+                    
+                    tabs(datos)
+					select(datos);
+					select2(datos);
+					 
+                })
+
+
+         $("#consulta").load("consulta.php");
+
+
+
+        function tabs(datos) {
+ 
+            datos.map(function (valor3) { 
+			
+			options3 += '<div class="clearfix"></div><div class="card horizontal col 16"><div class="card-image"><img src="img/home.jpg"></div><div class="card-stacked"><div class="card-content"><p>Direccion:' + valor3.Direccion + '</p><p>Ciudad:' + valor3.Ciudad + '</p><p>Telefono:' + valor3.Telefono + '</p><p>Codigo Postal:' + valor3.Codigo_Postal + '</p><p>Tipo:' + valor3.Tipo + '</p><p>Precio:' + valor3.Precio + '</p></div><div class="card-action"><button  onclick="insertar(this)"  data-id="' + valor3.Id +  '" data-ciudad="' + valor3.Ciudad +  '" data-tipo="' + valor3.Tipo +  '" data-direccion="' + valor3.Direccion +  '" data-telefono="' + valor3.Telefono +  '" data-codigo_postal="' + valor3.Codigo_Postal +  '" data-precio="' + valor3.Precio +  '">Aceptar</button></div></div></div> </div>';
+               
+   
+			});
+
+			 $("#contenido").html(options3);
+		
+			
+        }		   
+
+           function select(datos) {
+            $("#selectCiudad").html("");
+
+             var names = datos.map(function (person) { return person.Ciudad; });
+             var sorted = names.sort();
+
+             var unique = sorted.filter(function (value, index) {
+             return value !== sorted[index + 1];
+             });
+                    options += '<option value=0 selected>Elige una ciudad</option>';
+		  	
+            for(let valor of unique){
+				
+				 options += '<option value="' + valor + '">' + valor + '</option>';
+   
+		        
+            }
+			 $("#selectCiudad").html(options);
+        }
+
+
+           function select2(datos) {
+            $("#selectTipo").html("");
+
+             var names2 = datos.map(function (person2) { return person2.Tipo; });
+             var sorted2 = names2.sort();
+
+             var unique2 = sorted2.filter(function (value2, index2) {
+             return value2 !== sorted2[index2 + 1];
+             });
+                 
+				 options2 += '<option value=0 selected>Elige un tipo</option>';
+			
+            for(let valor2 of unique2){
+                 
+				
+				 options2 += '<option value="' + valor2 + '">' + valor2 + '</option>';
+   
+		        
+            }
+		 $("#selectTipo").html(options2);
+        }
+
+        $('#formulario').on('submit', function(e) { 
+        e.preventDefault(); 
+	    var options4,elemento;
+          fetch('data-1.json')
+                .then(res => res.json())
+                .then(datos => {
+                    // console.log(datos)
+             elemento=$("#selectTipo").val();
+			 elemento2=$("#selectCiudad").val();
+
+            datos.map(function (valor4) { 
+			
+			if((valor4.Tipo==elemento && valor4.Ciudad==elemento2) || (elemento==0 && valor4.Ciudad==elemento2) || (valor4.Tipo==elemento && elemento2==0)){
+
+
+			options4 += '<div class="clearfix"></div><div class="card horizontal col 16"><div class="card-image"><img src="img/home.jpg"></div><div class="card-stacked"><div class="card-content"><p>Direccion:' + valor4.Direccion + '</p><p>Ciudad:' + valor4.Ciudad + '</p><p>Telefono:' + valor4.Telefono + '</p><p>Codigo Postal:' + valor4.Codigo_Postal + '</p><p>Tipo:' + valor4.Tipo + '</p><p>Precio:' + valor4.Precio + '</p></div><div class="card-action"><button  onclick="insertar(this)"  data-id="' + valor4.Id +  '" data-ciudad="' + valor4.Ciudad +  '" data-tipo="' + valor4.Tipo +  '" data-direccion="' + valor4.Direccion +  '" data-telefono="' + valor4.Telefono +  '" data-codigo_postal="' + valor4.Codigo_Postal +  '"data-precio="' + valor4.Precio +  '">Aceptar</button></div></div></div> </div>';
+                        		
+			}
+   
+			});
+
+			 $("#contenido").html(options4);
+		
+
+
+					 
+                })
+  
+            });   
+
+        });
+</script>
+    <script type="text/javascript">
+
+    function insertar(e){
+	
+	var ciudad = $(e).data('ciudad'),
+	tipo = $(e).data('tipo'),
+	id= $(e).data('id'),
+	codigo_postal= $(e).data('codigo_postal'),
+	telefono= $(e).data('telefono'),
+	direccion= $(e).data('direccion'), 
+    precio= $(e).data('precio'), 
+
+ 
+	datos = { "id":id,"ciudad":ciudad, "tipo":tipo,"codigo_postal":codigo_postal,"telefono":telefono,"direccion":direccion,"precio":precio};
+
+
+    $.ajax({
+        type: "POST",
+        dataType: "html",
+        url: "datos.php",
+        data: datos,
+        success: function(resp){
+    $("#consulta").load("consulta.php");    
+	//$("#respuesta").html(resp);
+    alert(resp);      
+	  }
+    });
+
+
+    }
+    
+</script>	
+</body>
+</html>
